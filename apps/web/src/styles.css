@@ -97,6 +97,11 @@ select {
   transform: scale(1.12);
 }
 
+.seat.available.selected:not([aria-disabled="true"]):hover {
+  fill: #059669;
+  transform: scale(1.12);
+}
+
 .seat.limit-reached {
   opacity: 0.45;
 }
