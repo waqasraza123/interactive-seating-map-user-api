@@ -1,0 +1,36 @@
+{
+  "id": "demo-venue",
+  "name": "Demo Event Hall",
+  "sections": [
+    {
+      "id": "floor-a",
+      "name": "Floor A",
+      "seats": [
+        {
+          "id": "A-1",
+          "row": "A",
+          "number": 1,
+          "x": 120,
+          "y": 140,
+          "status": "available"
+        },
+        {
+          "id": "A-2",
+          "row": "A",
+          "number": 2,
+          "x": 168,
+          "y": 140,
+          "status": "held"
+        },
+        {
+          "id": "A-3",
+          "row": "A",
+          "number": 3,
+          "x": 216,
+          "y": 140,
+          "status": "sold"
+        }
+      ]
+    }
+  ]
+}

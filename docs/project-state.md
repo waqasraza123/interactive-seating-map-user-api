@@ -2,22 +2,26 @@
 
 ## Product
 
-`interactive-seating-map-user-api` is a backend API project for an interactive seating map take-home assignment. No application code exists yet.
+`interactive-seating-map-user-api` is a full-stack take-home assignment for an interactive event seating map. The product includes a React frontend and an Express user data API that will later add caching, rate limiting, and async processing.
 
 ## Current Architecture
 
-- Repository is a pnpm workspace skeleton.
+- Repository is a pnpm TypeScript monorepo.
 - Root package is private and pins `pnpm@10.13.1` through `packageManager`.
-- Workspace packages are planned under `apps/*` and `packages/*`.
-- Current committed files are `README.md`, `.gitignore`, `package.json`, `pnpm-workspace.yaml`, `AGENTS.md`, and this project state file.
+- Workspace packages live under `apps/*` and `packages/*`.
+- `apps/web` is a Vite, React, and TypeScript frontend shell.
+- `apps/api` is an Express and TypeScript backend with a minimal `/health` route.
+- `packages/shared` contains shared TypeScript domain types for venue fixtures.
+- `apps/web/public/venue.json` is the starter public venue fixture.
 - The repository has a versioned safe-push workflow through `.githooks/pre-push`, `scripts/verify-push.sh`, and `scripts/safe-push.sh`.
-- There are no apps, packages, TypeScript configs, runtime dependencies, tests, CI workflows, or deployment files yet.
+- Strict TypeScript is enabled through `tsconfig.base.json` and package-level configs.
+- ESLint is configured at the root and run per workspace.
 
 ## Non-Negotiable Rules
 
 - Use pnpm.
 - Keep the TypeScript monorepo structure aligned with `apps/*` and `packages/*`.
-- Do not add application code before the foundation is intentionally defined.
+- Keep frontend code in `apps/web`, backend code in `apps/api`, and cross-boundary types in `packages/shared`.
 - Do not store secrets in repo memory or local session memory.
 - Keep `docs/project-state.md` durable, concise, and focused on architecture, roadmap, constraints, and important decisions.
 - Keep `docs/_local/current-session.md` local and ignored.
@@ -29,12 +33,11 @@
 
 ## Current Roadmap
 
-- Establish the TypeScript monorepo foundation.
-- Add a backend API app under `apps/*`.
-- Add shared packages under `packages/*` only when a real cross-app or cross-module boundary exists.
-- Add validation, error handling, tests, and verification scripts before building feature slices.
-- Add a real `build` script when the TypeScript monorepo foundation exists so safe-push enforces builds.
-- Implement the interactive seating map user API after the foundation is in place.
+- Add backend middleware for request parsing, error handling, rate limiting, and caching.
+- Add async processing boundaries for future user-data workflows.
+- Add frontend venue fixture loading and seating map rendering.
+- Add tests around shared types, API routes, and frontend behavior.
+- Add CI after local verification commands are stable.
 
 ## Completed Major Slices
 
@@ -45,24 +48,23 @@
 - Added `pnpm-workspace.yaml` with `apps/*` and `packages/*`.
 - Added durable and local Codex context system.
 - Added versioned safe-push workflow and contributor documentation.
+- Added TypeScript monorepo scaffold with `apps/web`, `apps/api`, and `packages/shared`.
 
 ## Important Decisions
 
 - Use repo-driven memory through `AGENTS.md` and `docs/project-state.md`.
 - Use ignored local working memory at `docs/_local/current-session.md`.
-- Keep the repo empty of application code until the monorepo foundation is set.
 - Keep root package private because this is a workspace repo, not a package intended for registry publication.
 - Version Git hooks under `.githooks` and apply them locally with `pnpm setup:githooks`.
-- Safe-push verification skips `pnpm build` only while no root `build` script exists.
+- Safe-push verification runs the root `pnpm build` script before pushing.
+- Use Vite for the React frontend and Express for the backend API.
 
 ## Deferred / Not Yet Implemented
 
 - GitHub remote and public repository are not configured in this checkout.
-- TypeScript configuration is not present.
-- No API framework has been selected.
 - No data model, database, authentication, or deployment target has been implemented.
-- No test runner, linter, formatter, build script, or CI workflow has been added.
-- No lockfile exists yet.
+- Caching, rate limiting, async processing, and user data routes are not implemented yet.
+- No test runner, formatter, or CI workflow has been added.
 
 ## Risks / Watchouts
 
@@ -70,7 +72,7 @@
 - There is no `origin` remote, so pushes cannot succeed until the public GitHub repo is created and remote is set.
 - Corepack may need to download `pnpm@10.13.1` before pnpm commands work on a fresh machine.
 - Avoid creating shared packages before there is a real reuse boundary.
-- Avoid choosing API, database, or validation libraries without confirming assignment requirements.
+- Avoid adding data storage, auth, or background job libraries before the assignment requirements require them.
 
 ## Standard Verification
 
@@ -78,5 +80,8 @@
 - `git remote -v`
 - `pnpm --version`
 - `pnpm -w list --depth -1`
+- `pnpm build`
+- `pnpm typecheck`
+- `pnpm lint`
 - `pnpm verify:push`
 - `pnpm safe-push`
