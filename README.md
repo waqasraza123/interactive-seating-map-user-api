@@ -4,6 +4,30 @@ Full-stack take-home assignment for an interactive event seating map.
 
 The app lets a user browse an event venue, inspect seat details, select up to 8 available seats, and see a live subtotal. The API demonstrates production-style backend patterns around user data, caching, rate limiting, and async processing without external infrastructure.
 
+## Assignment Notes
+
+### How I Approached and Completed the Assignment
+
+I split the work into a frontend seating map, a backend user API, and shared TypeScript types. I started with the project structure, then built the API, then built the seating map UI, and finally added tests, formatting, build checks, and documentation.
+
+On the frontend, I focused on the main user flow: seeing the venue, selecting available seats, viewing seat details, enforcing the 8-seat limit, saving selections in the browser, and keeping the layout usable on smaller screens.
+
+On the backend, I implemented the required user API with mock data, input validation, clean JSON errors, in-memory caching, rate limiting, and a simple async queue to show how slower data fetching could be handled.
+
+### Technical Decisions and Thought Process
+
+I used a pnpm TypeScript monorepo so the frontend, backend, and shared types stay separate but still work together. This keeps the code easier to test, build, and extend.
+
+I used React with Vite for the frontend because it is fast and simple for this kind of interactive UI. I used SVG for the seating map because each seat can be a real focusable element with clear ARIA state. That makes keyboard support and accessibility more direct for this assignment.
+
+I used Express for the backend because the API requirements are small and clear. The cache, rate limiter, queue, and mock data store are all in memory because the assignment does not require external services. In a production system with more than one server, I would move shared cache and rate-limit state to Redis and use a durable queue for background jobs.
+
+I added automated tests and a manual QA checklist because the assignment has several important behaviors that are easy to break, especially seat selection, unavailable seats, subtotal updates, API errors, caching, and rate limiting.
+
+### Relevant Experience
+
+This assignment matches my experience with TypeScript, React user interfaces, Node and Express APIs, shared frontend/backend types, validation, tests, and maintainable project structure. I have worked on features where the UI needs to stay responsive and accessible while the backend handles data fetching, errors, caching, and predictable API responses.
+
 ## Architecture
 
 This is a pnpm TypeScript monorepo.
