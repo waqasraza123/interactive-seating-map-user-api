@@ -2,11 +2,18 @@
 
 Full-stack take-home assignment for an interactive event seating map.
 
-## Workspace
+The app lets a user browse an event venue, inspect seat details, select up to 8 available seats, and see a live subtotal. The API demonstrates production-style backend patterns around user data, caching, rate limiting, and async processing without external infrastructure.
 
-- `apps/web`: Vite, React, and TypeScript frontend shell.
-- `apps/api`: Express and TypeScript backend API with users, cache, rate limiting, and async mock data fetches.
-- `packages/shared`: Shared TypeScript domain types.
+## Architecture
+
+This is a pnpm TypeScript monorepo.
+
+- `apps/web`: Vite, React, TypeScript, SVG seating map UI.
+- `apps/api`: Express, TypeScript, user data API.
+- `packages/shared`: Shared domain and API response types.
+- `scripts`: repository workflow and local fixture generation scripts.
+
+The repo keeps frontend, backend, and shared types separate so each workspace can build, typecheck, and lint independently while sharing stable contracts.
 
 ## Commands
 
@@ -19,29 +26,33 @@ pnpm lint
 pnpm safe-push
 ```
 
-Run this once after cloning to enable versioned Git hooks:
+After cloning, enable versioned Git hooks:
 
 ```sh
 pnpm setup:githooks
 ```
 
-The web app serves the starter venue fixture from `apps/web/public/venue.json`.
+`pnpm dev` runs the web app and API together. By default:
 
-## Frontend Seating Map
+- Web: `http://localhost:5173`
+- API: `http://localhost:3000`
 
-The frontend loads `apps/web/public/venue.json`, normalizes sections and seats once, and renders the seating map as SVG.
+## Frontend
 
-Frontend behavior:
+The frontend loads `apps/web/public/venue.json`, normalizes sections and seats once, and renders seats in an SVG map at their fixture coordinates.
 
-- Renders every fixture seat at its `x` and `y` coordinates.
-- Supports click, tab focus, Enter, and Space for seat interaction.
-- Shows focused or clicked seat details: section, row, seat number, price, and status.
-- Allows selecting up to 8 available seats.
-- Keeps held, reserved, and sold seats visible but disabled.
-- Shows selected seats and subtotal live.
-- Persists selected seat IDs in `localStorage` and validates restored IDs against the current venue fixture.
+Implemented behavior:
 
-Price tiers are assignment assumptions:
+- Click, Enter, and Space select available seats.
+- Arrow keys move roving focus across seats.
+- Focus or click updates the details panel.
+- Seats expose `aria-label`, `aria-pressed`, and `aria-disabled`.
+- Held, reserved, and sold seats are visible but not selectable.
+- Selected seats persist in `localStorage` and are validated against current venue data on reload.
+- Selected seat summary updates live with subtotal.
+- Responsive layout keeps the map scrollable and details readable on mobile.
+
+Price tiers are assignment assumptions because the prompt gives tiers but no exact prices:
 
 ```ts
 standard: 55
@@ -49,70 +60,76 @@ premium: 85
 vip: 125
 ```
 
-The map uses SVG because the assignment is coordinate-driven and SVG gives accessible, keyboard-focusable seat elements without a canvas accessibility layer.
+### SVG Trade-Off
 
-### Frontend Performance QA
+SVG is used because the assignment is coordinate-driven and each seat can remain a real focusable element with ARIA state. This keeps accessibility straightforward for the take-home.
 
-The default app uses the small assignment fixture:
+For very large production venues with heavy zooming, panning, and animation, Canvas or WebGL would likely render faster. That would require separate hit testing and an accessibility layer, so SVG is the better default here.
 
-```sh
-pnpm dev
-```
+### Large Venue QA
 
-Generate a local 15,000-seat venue fixture:
+Generate a local 15,000-seat fixture:
 
 ```sh
 pnpm fixture:large
 ```
 
-Then open:
+Then run the app and open:
 
 ```text
 http://localhost:5173/?venue=large
 ```
 
-Manual QA for the large fixture:
+`apps/web/public/venue-large.json` is generated locally and ignored by git.
 
-- Confirm the page reports `15,000 seats loaded`.
-- Select available seats and confirm the summary stays responsive.
-- Use Tab once to enter the seat map, then Arrow keys to move between seats.
-- Use Enter or Space to select available seats.
-- Confirm held, reserved, and sold seats do not toggle selection.
-- Resize to a mobile viewport and confirm the map scrolls horizontally while details and summary remain readable.
+## Backend
 
-SVG is kept for this take-home because it preserves direct semantic seat elements, focus behavior, and ARIA attributes. Canvas would become preferable for larger production arenas or heavy zoom/pan interactions, but it would require a separate accessibility layer and hit-testing model.
+The backend is an Express API with a small mock user data store.
 
-## Backend API
+Mock users:
 
-Start the API:
+- `1`: John Doe, `john@example.com`
+- `2`: Jane Smith, `jane@example.com`
+- `3`: Alice Johnson, `alice@example.com`
 
-```sh
-pnpm --filter @interactive-seating-map/api dev
-```
+Backend behavior:
 
-The API listens on `PORT` or `3000` by default.
+- Simulates database reads with a 200ms delay.
+- Uses an in-memory LRU cache with 60s TTL.
+- Tracks cache hits, misses, current size, and average response time.
+- Clears stale cache entries with a background task.
+- Deduplicates concurrent requests for the same user ID with single-flight handling.
+- Runs mock database fetches through a simple in-process async queue.
+- Rate limits per IP: 10 requests per minute and burst capacity of 5 requests per 10 seconds.
+- Returns clean JSON errors for validation, missing users, unknown routes, and rate limits.
 
-### Endpoints
+### Backend Trade-Offs
+
+The cache, rate limiter, queue, and mock data store are process-local by design for the take-home. They are simple, inspectable, and require no external services.
+
+For multi-instance production, Redis would be a better fit for shared cache and rate-limit state. BullMQ or another durable queue would be more appropriate for background work that must survive restarts.
+
+## API Examples
+
+Health:
 
 ```sh
 curl http://localhost:3000/health
 ```
 
+Get an existing user:
+
 ```sh
 curl http://localhost:3000/users/1
 ```
+
+Get a missing user:
 
 ```sh
 curl http://localhost:3000/users/999
 ```
 
-```sh
-curl http://localhost:3000/cache-status
-```
-
-```sh
-curl -X DELETE http://localhost:3000/cache
-```
+Create a user:
 
 ```sh
 curl -X POST http://localhost:3000/users \
@@ -120,9 +137,56 @@ curl -X POST http://localhost:3000/users \
   -d '{"name":"New User","email":"new@example.com"}'
 ```
 
-### Backend Assumptions
+Cache status:
 
-- Rate limiting is per IP: 10 requests per minute with a burst capacity of 5 requests in 10 seconds.
-- The in-memory LRU cache is suitable for this take-home; Redis or another shared cache would be used for multi-instance production.
-- A simple in-process queue is used for mock database fetches to avoid external infrastructure.
-- Cache entries expire after 60 seconds and stale entries are cleared by a background task.
+```sh
+curl http://localhost:3000/cache-status
+```
+
+Clear cache:
+
+```sh
+curl -X DELETE http://localhost:3000/cache
+```
+
+## Manual QA Checklist
+
+Run static checks:
+
+```sh
+pnpm build
+pnpm typecheck
+pnpm lint
+```
+
+Frontend:
+
+- Open `http://localhost:5173`.
+- Confirm venue seats render.
+- Select available seats and verify details/subtotal update.
+- Confirm held, reserved, and sold seats do not select.
+- Select 8 seats and confirm the limit is enforced.
+- Reload and confirm selected seats restore from `localStorage`.
+- Use Tab to enter the map, Arrow keys to move focus, and Enter/Space to select.
+- Resize to mobile width and confirm map scrolling and panels remain usable.
+- Run `pnpm fixture:large`, open `/?venue=large`, and confirm `15,000 seats loaded`.
+
+Backend:
+
+- Start `pnpm dev`.
+- Verify `GET /health`.
+- Verify `GET /users/1`.
+- Verify `GET /users/999` returns a 404 JSON error.
+- Verify `POST /users` creates a user.
+- Verify `GET /cache-status` changes after user reads.
+- Verify `DELETE /cache` clears cached entries.
+- Send more than 10 requests in a minute from one IP and confirm `429`.
+
+## Incomplete / Deferred
+
+- No automated test runner yet.
+- No CI workflow yet.
+- No formatter configuration yet.
+- No database, authentication, deployment target, or persistent background queue.
+- Frontend does not integrate with backend user data because the seating-map assignment does not require it.
+- Large venue rendering is validated with SVG, but Canvas/WebGL would be revisited for larger production-scale maps with zoom/pan requirements.

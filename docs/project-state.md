@@ -52,6 +52,7 @@
 - Pushed `main` to the GitHub `origin` remote.
 - Implemented backend user API with in-memory LRU cache, metrics, rate limiting, queue-backed mock fetches, and centralized errors.
 - Implemented frontend interactive SVG seating map with selection, details, subtotal, localStorage persistence, and responsive layout.
+- Prepared final submission documentation with architecture, commands, API examples, QA checklist, trade-offs, and deferred items.
 
 ## Important Decisions
 
@@ -80,6 +81,7 @@
 - Avoid adding data storage, auth, or background job libraries before the assignment requirements require them.
 - In-memory rate limiting and cache state are process-local and reset on restart.
 - Rendering 15,000 SVG seats is acceptable for validation but still heavier than Canvas for very large production seating maps.
+- README is the primary final-submission guide.
 
 ## Standard Verification
 

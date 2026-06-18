@@ -10,7 +10,7 @@ Run this once after cloning:
 pnpm setup:githooks
 ```
 
-Before pushing, use the AI-friendly wrapper:
+Before pushing, use the repository wrapper:
 
 ```sh
 pnpm safe-push
