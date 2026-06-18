@@ -57,7 +57,7 @@ export function SeatingMap({
       }
 
       const seatId = eventTarget.dataset.seatId;
-      return seatId ? venue.seatsById.get(seatId) ?? null : null;
+      return seatId ? (venue.seatsById.get(seatId) ?? null) : null;
     },
     [venue.seatsById]
   );
@@ -122,9 +122,7 @@ export function SeatingMap({
   return (
     <section className="map-panel" aria-label={`${venue.fixture.name} seating map`}>
       <div className="map-toolbar">
-        <p aria-live="polite">
-          {venue.seats.length.toLocaleString()} seats loaded. Use arrow keys to move focus across seats.
-        </p>
+        <p aria-live="polite">{venue.seats.length.toLocaleString()} seats loaded. Use arrow keys to move focus across seats.</p>
         <label className="heat-map-toggle">
           <input type="checkbox" checked={isHeatMapEnabled} onChange={onHeatMapChange} />
           Price heat map
@@ -164,23 +162,32 @@ export function SeatingMap({
         </svg>
       </div>
       <div className="legend" aria-label="Seat status legend">
-        <span><span className="legend-dot available" />Available</span>
-        <span><span className="legend-dot selected" />Selected</span>
-        <span><span className="legend-dot held" />Held</span>
-        <span><span className="legend-dot reserved" />Reserved</span>
-        <span><span className="legend-dot sold" />Sold</span>
+        <span>
+          <span className="legend-dot available" />
+          Available
+        </span>
+        <span>
+          <span className="legend-dot selected" />
+          Selected
+        </span>
+        <span>
+          <span className="legend-dot held" />
+          Held
+        </span>
+        <span>
+          <span className="legend-dot reserved" />
+          Reserved
+        </span>
+        <span>
+          <span className="legend-dot sold" />
+          Sold
+        </span>
       </div>
     </section>
   );
 }
 
-const SeatMarker = memo(function SeatMarker({
-  isBlocked,
-  isActive,
-  isHeatMapEnabled,
-  isSelected,
-  seat
-}: SeatMarkerProps) {
+const SeatMarker = memo(function SeatMarker({ isBlocked, isActive, isHeatMapEnabled, isSelected, seat }: SeatMarkerProps) {
   const isSelectable = isSeatSelectable(seat.status);
   const isDisabled = !isSelectable;
   const tabIndex = isActive ? 0 : -1;

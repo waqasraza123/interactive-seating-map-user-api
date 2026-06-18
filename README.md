@@ -20,6 +20,8 @@ The repo keeps frontend, backend, and shared types separate so each workspace ca
 ```sh
 pnpm install
 pnpm dev
+pnpm format
+pnpm format:check
 pnpm test
 pnpm build
 pnpm typecheck
@@ -38,6 +40,28 @@ pnpm setup:githooks
 - Web: `http://localhost:5173`
 - API: `http://localhost:3000`
 
+## Repository Quality
+
+Formatting is handled by Prettier:
+
+```sh
+pnpm format
+pnpm format:check
+```
+
+`pnpm format` writes formatting changes for TypeScript, TSX, JSON, Markdown, CSS, and YAML files. `pnpm format:check` verifies formatting without writing changes.
+
+GitHub Actions runs the final verification workflow on pushes to `main` and pull requests:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
 ## Frontend
 
 The frontend loads `apps/web/public/venue.json`, normalizes sections and seats once, and renders seats in an SVG map at their fixture coordinates.
@@ -55,7 +79,7 @@ Implemented behavior:
 
 Price tiers are assignment assumptions because the prompt gives tiers but no exact prices:
 
-```ts
+```text
 standard: 55
 premium: 85
 vip: 125
@@ -167,10 +191,11 @@ The frontend suite uses Vitest, Testing Library React, and user-event to cover a
 Run static checks:
 
 ```sh
+pnpm format:check
+pnpm lint
+pnpm typecheck
 pnpm test
 pnpm build
-pnpm typecheck
-pnpm lint
 ```
 
 Frontend:
@@ -198,8 +223,6 @@ Backend:
 
 ## Incomplete / Deferred
 
-- No CI workflow yet.
-- No formatter configuration yet.
 - No database, authentication, deployment target, or persistent background queue.
 - Frontend does not integrate with backend user data because the seating-map assignment does not require it.
 - Large venue rendering is validated with SVG, but Canvas/WebGL would be revisited for larger production-scale maps with zoom/pan requirements.

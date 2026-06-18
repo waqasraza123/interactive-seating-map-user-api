@@ -15,7 +15,9 @@ export function App() {
   if (venueState.isLoading) {
     return (
       <PageShell venueSource={venueSource}>
-        <section className="status-panel" aria-live="polite">Loading venue...</section>
+        <section className="status-panel" aria-live="polite">
+          Loading venue...
+        </section>
       </PageShell>
     );
   }
@@ -23,7 +25,9 @@ export function App() {
   if (venueState.error) {
     return (
       <PageShell venueSource={venueSource}>
-        <section className="status-panel error" role="alert">{venueState.error}</section>
+        <section className="status-panel error" role="alert">
+          {venueState.error}
+        </section>
       </PageShell>
     );
   }
@@ -31,7 +35,9 @@ export function App() {
   if (!venueState.venue) {
     return (
       <PageShell venueSource={venueSource}>
-        <section className="status-panel error" role="alert">Venue data was empty.</section>
+        <section className="status-panel error" role="alert">
+          Venue data was empty.
+        </section>
       </PageShell>
     );
   }

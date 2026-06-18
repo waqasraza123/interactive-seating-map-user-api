@@ -30,10 +30,11 @@ export function useSeatSelection(seatsById: Map<string, NormalizedSeat>): SeatSe
   }, [selectedSeatIds]);
 
   const selectedSeats = useMemo(
-    () => selectedSeatIds.flatMap((seatId) => {
-      const seat = seatsById.get(seatId);
-      return seat ? [seat] : [];
-    }),
+    () =>
+      selectedSeatIds.flatMap((seatId) => {
+        const seat = seatsById.get(seatId);
+        return seat ? [seat] : [];
+      }),
     [selectedSeatIds, seatsById]
   );
 

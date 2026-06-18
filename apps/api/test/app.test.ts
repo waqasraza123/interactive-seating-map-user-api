@@ -76,7 +76,9 @@ describe("api routes", () => {
     const app = createTestApp();
 
     await request(app).get("/users/1").expect(200);
-    await request(app).delete("/cache").expect(200, { data: { cleared: true } });
+    await request(app)
+      .delete("/cache")
+      .expect(200, { data: { cleared: true } });
 
     const response = await request(app).get("/cache-status").expect(200);
     expect(response.body).toMatchObject({ size: 0 });

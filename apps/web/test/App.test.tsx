@@ -51,11 +51,14 @@ const fixture: VenueFixture = {
 function mockVenueFetch(): void {
   vi.stubGlobal(
     "fetch",
-    vi.fn(async () => new Response(JSON.stringify(fixture), {
-      headers: {
-        "content-type": "application/json"
-      }
-    }))
+    vi.fn(
+      async () =>
+        new Response(JSON.stringify(fixture), {
+          headers: {
+            "content-type": "application/json"
+          }
+        })
+    )
   );
 }
 

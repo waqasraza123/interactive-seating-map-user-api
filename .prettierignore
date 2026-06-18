@@ -1,0 +1,9 @@
+node_modules/
+.pnpm-store/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+apps/web/public/venue-large.json
+docs/_local/
+pnpm-lock.yaml

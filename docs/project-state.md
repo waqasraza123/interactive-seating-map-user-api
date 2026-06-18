@@ -15,6 +15,8 @@
 - `packages/shared` contains shared TypeScript domain and response types for venue fixtures, users, cache status, and API responses.
 - `apps/web/public/venue.json` is the public venue fixture with positioned seats and price tiers.
 - Automated tests use Vitest across the workspace, Supertest for backend API routes, and Testing Library React with user-event for frontend behavior.
+- Prettier is configured at the repo root for TypeScript, TSX, JSON, Markdown, CSS, and YAML files.
+- GitHub Actions CI runs install, format check, lint, typecheck, tests, and build on pushes to `main` and pull requests.
 - The repository has a versioned safe-push workflow through `.githooks/pre-push`, `scripts/verify-push.sh`, and `scripts/safe-push.sh`.
 - Strict TypeScript is enabled through `tsconfig.base.json` and package-level configs.
 - ESLint is configured at the root and run per workspace.
@@ -37,7 +39,7 @@
 
 - Add frontend tests around keyboard selection, localStorage restoration, and max-seat enforcement.
 - Add frontend API integration only if the assignment scope requires connecting user data to the map.
-- Add CI after local verification commands are stable.
+- Monitor first GitHub Actions run after final submission push.
 
 ## Completed Major Slices
 
@@ -54,6 +56,7 @@
 - Implemented frontend interactive SVG seating map with selection, details, subtotal, localStorage persistence, and responsive layout.
 - Prepared final submission documentation with architecture, commands, API examples, QA checklist, trade-offs, and deferred items.
 - Added focused automated tests for backend API behavior, cache/rate limiting, service single-flight deduplication, and core frontend seat selection flows.
+- Added Prettier formatting, expanded safe-push verification, and GitHub Actions CI for public assignment hygiene.
 
 ## Important Decisions
 
@@ -61,7 +64,7 @@
 - Use ignored local working memory at `docs/_local/current-session.md`.
 - Keep root package private because this is a workspace repo, not a package intended for registry publication.
 - Version Git hooks under `.githooks` and apply them locally with `pnpm setup:githooks`.
-- Safe-push verification runs the root `pnpm build` script before pushing.
+- Safe-push verification runs `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` before pushing.
 - Use Vite for the React frontend and Express for the backend API.
 - `main` tracks `origin/main`.
 - In-memory cache and queue are acceptable for the take-home; production multi-instance deployments would use shared infrastructure such as Redis and an external queue.
@@ -74,7 +77,6 @@
 
 - No data model, database, authentication, or deployment target has been implemented.
 - Frontend API integration is not implemented because this slice only requires the seating map.
-- No formatter or CI workflow has been added.
 
 ## Risks / Watchouts
 
@@ -91,9 +93,10 @@
 - `git remote -v`
 - `pnpm --version`
 - `pnpm -w list --depth -1`
+- `pnpm format:check`
+- `pnpm lint`
+- `pnpm typecheck`
 - `pnpm test`
 - `pnpm build`
-- `pnpm typecheck`
-- `pnpm lint`
 - `pnpm verify:push`
 - `pnpm safe-push`
