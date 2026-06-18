@@ -20,6 +20,8 @@ type VenueState =
       venue: NormalizedVenue;
     };
 
+const missingLargeVenueMessage = "Large venue fixture is missing. Run `pnpm fixture:large`, then reload `/?venue=large`.";
+
 export function useVenue(source: VenueSource): VenueState {
   const [venue, setVenue] = useState<NormalizedVenue | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +39,15 @@ export function useVenue(source: VenueSource): VenueState {
 
         if (!response.ok) {
           throw new Error(`Venue request failed with status ${response.status}.`);
+        }
+
+        const contentType = response.headers.get("content-type") ?? "";
+        if (!contentType.includes("application/json")) {
+          if (source === "large") {
+            throw new Error(missingLargeVenueMessage);
+          }
+
+          throw new Error("Venue request did not return JSON.");
         }
 
         setVenue(normalizeVenue(parseVenueFixture(await response.json())));
