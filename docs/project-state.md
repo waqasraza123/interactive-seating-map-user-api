@@ -10,7 +10,8 @@
 - Root package is private and pins `pnpm@10.13.1` through `packageManager`.
 - Workspace packages are planned under `apps/*` and `packages/*`.
 - Current committed files are `README.md`, `.gitignore`, `package.json`, `pnpm-workspace.yaml`, `AGENTS.md`, and this project state file.
-- There are no apps, packages, TypeScript configs, runtime dependencies, scripts, tests, CI workflows, or deployment files yet.
+- The repository has a versioned safe-push workflow through `.githooks/pre-push`, `scripts/verify-push.sh`, and `scripts/safe-push.sh`.
+- There are no apps, packages, TypeScript configs, runtime dependencies, tests, CI workflows, or deployment files yet.
 
 ## Non-Negotiable Rules
 
@@ -23,6 +24,7 @@
 - No comments in code unless truly necessary.
 - Use descriptive, consistent names and maintain modular, testable, strongly typed code.
 - State assumptions explicitly when requirements are missing.
+- Use `pnpm safe-push` for AI-driven pushes.
 - Commit messages must stay under 140 characters.
 
 ## Current Roadmap
@@ -31,6 +33,7 @@
 - Add a backend API app under `apps/*`.
 - Add shared packages under `packages/*` only when a real cross-app or cross-module boundary exists.
 - Add validation, error handling, tests, and verification scripts before building feature slices.
+- Add a real `build` script when the TypeScript monorepo foundation exists so safe-push enforces builds.
 - Implement the interactive seating map user API after the foundation is in place.
 
 ## Completed Major Slices
@@ -41,6 +44,7 @@
 - Added root `package.json` with pnpm pin.
 - Added `pnpm-workspace.yaml` with `apps/*` and `packages/*`.
 - Added durable and local Codex context system.
+- Added versioned safe-push workflow and contributor documentation.
 
 ## Important Decisions
 
@@ -48,6 +52,8 @@
 - Use ignored local working memory at `docs/_local/current-session.md`.
 - Keep the repo empty of application code until the monorepo foundation is set.
 - Keep root package private because this is a workspace repo, not a package intended for registry publication.
+- Version Git hooks under `.githooks` and apply them locally with `pnpm setup:githooks`.
+- Safe-push verification skips `pnpm build` only while no root `build` script exists.
 
 ## Deferred / Not Yet Implemented
 
@@ -55,7 +61,7 @@
 - TypeScript configuration is not present.
 - No API framework has been selected.
 - No data model, database, authentication, or deployment target has been implemented.
-- No test runner, linter, formatter, or CI workflow has been added.
+- No test runner, linter, formatter, build script, or CI workflow has been added.
 - No lockfile exists yet.
 
 ## Risks / Watchouts
@@ -72,3 +78,5 @@
 - `git remote -v`
 - `pnpm --version`
 - `pnpm -w list --depth -1`
+- `pnpm verify:push`
+- `pnpm safe-push`
