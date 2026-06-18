@@ -5,14 +5,16 @@ import { SeatingMap } from "./components/SeatingMap";
 import { SelectionSummary } from "./components/SelectionSummary";
 import { useSeatSelection } from "./hooks/useSeatSelection";
 import { useVenue } from "./hooks/useVenue";
+import { useVenueSource } from "./hooks/useVenueSource";
 import type { NormalizedSeat } from "./lib/venue";
 
 export function App() {
-  const venueState = useVenue();
+  const venueSource = useVenueSource();
+  const venueState = useVenue(venueSource);
 
   if (venueState.isLoading) {
     return (
-      <PageShell>
+      <PageShell venueSource={venueSource}>
         <section className="status-panel" aria-live="polite">Loading venue...</section>
       </PageShell>
     );
@@ -20,7 +22,7 @@ export function App() {
 
   if (venueState.error) {
     return (
-      <PageShell>
+      <PageShell venueSource={venueSource}>
         <section className="status-panel error" role="alert">{venueState.error}</section>
       </PageShell>
     );
@@ -28,33 +30,40 @@ export function App() {
 
   if (!venueState.venue) {
     return (
-      <PageShell>
+      <PageShell venueSource={venueSource}>
         <section className="status-panel error" role="alert">Venue data was empty.</section>
       </PageShell>
     );
   }
 
-  return <VenueExperience venue={venueState.venue} />;
+  return <VenueExperience venue={venueState.venue} venueSource={venueSource} />;
 }
 
 type VenueExperienceProps = {
   venue: NonNullable<ReturnType<typeof useVenue>["venue"]>;
+  venueSource: ReturnType<typeof useVenueSource>;
 };
 
-function VenueExperience({ venue }: VenueExperienceProps) {
-  const [activeSeat, setActiveSeat] = useState<NormalizedSeat | null>(null);
+function VenueExperience({ venue, venueSource }: VenueExperienceProps) {
+  const [activeSeat, setActiveSeat] = useState<NormalizedSeat | null>(() => venue.seats[0] ?? null);
+  const [isHeatMapEnabled, setIsHeatMapEnabled] = useState(false);
   const selection = useSeatSelection(venue.seatsById);
   const selectedSeatIdSet = useMemo(() => new Set(selection.selectedSeatIds), [selection.selectedSeatIds]);
   const handleSeatFocus = useCallback((seat: NormalizedSeat) => {
     setActiveSeat(seat);
   }, []);
+  const handleHeatMapChange = useCallback(() => {
+    setIsHeatMapEnabled((currentValue) => !currentValue);
+  }, []);
 
   return (
-    <PageShell>
+    <PageShell venueSource={venueSource}>
       <section className="workspace">
         <SeatingMap
           activeSeatId={activeSeat?.id ?? null}
           canSelectMore={selection.canSelectMore}
+          isHeatMapEnabled={isHeatMapEnabled}
+          onHeatMapChange={handleHeatMapChange}
           onSeatFocus={handleSeatFocus}
           onSeatToggle={selection.toggleSeat}
           selectedSeatIds={selectedSeatIdSet}

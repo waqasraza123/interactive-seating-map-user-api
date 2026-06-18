@@ -85,9 +85,32 @@ p {
   overflow: hidden;
 }
 
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #d8e0e8;
+  padding: 14px 16px;
+}
+
+.map-toolbar p {
+  margin: 0;
+  color: #52606d;
+  font-size: 0.95rem;
+}
+
+.heat-map-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .map-scroller {
   overflow: auto;
   padding: 16px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .seat-map {
@@ -119,6 +142,18 @@ p {
     transform 120ms ease;
 }
 
+.seat.tier-standard {
+  fill: #5d9cec;
+}
+
+.seat.tier-premium {
+  fill: #7b61ff;
+}
+
+.seat.tier-vip {
+  fill: #c65f00;
+}
+
 .seat.held {
   fill: #f2a541;
 }
@@ -143,6 +178,27 @@ p {
 .seat.active {
   stroke: #111827;
   stroke-width: 5;
+}
+
+.venue-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.venue-switcher a {
+  border: 1px solid #c8d3df;
+  border-radius: 999px;
+  color: #17202a;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+.venue-switcher a[aria-current="page"] {
+  border-color: #17202a;
+  background: #17202a;
+  color: #ffffff;
 }
 
 .legend {
@@ -264,7 +320,12 @@ p {
     grid-template-columns: 1fr;
   }
 
+  .map-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .seat-map {
-    min-width: 620px;
+    min-width: 760px;
   }
 }

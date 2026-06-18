@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { normalizeVenue, parseVenueFixture, type NormalizedVenue } from "../lib/venue";
 
+export type VenueSource = "large" | "sample";
+
 type VenueState =
   | {
       error: null;
@@ -18,7 +20,7 @@ type VenueState =
       venue: NormalizedVenue;
     };
 
-export function useVenue(): VenueState {
+export function useVenue(source: VenueSource): VenueState {
   const [venue, setVenue] = useState<NormalizedVenue | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +30,8 @@ export function useVenue(): VenueState {
 
     async function loadVenue(): Promise<void> {
       try {
-        const response = await fetch("/venue.json", {
+        const venuePath = source === "large" ? "/venue-large.json" : "/venue.json";
+        const response = await fetch(venuePath, {
           signal: abortController.signal
         });
 
@@ -54,7 +57,7 @@ export function useVenue(): VenueState {
     return () => {
       abortController.abort();
     };
-  }, []);
+  }, [source]);
 
   if (isLoading) {
     return {

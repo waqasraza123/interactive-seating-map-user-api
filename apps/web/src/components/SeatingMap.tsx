@@ -1,10 +1,12 @@
-import { memo, useCallback, type KeyboardEvent } from "react";
+import { memo, useCallback, useMemo, type KeyboardEvent, type MouseEvent, type FocusEvent } from "react";
 import { formatCurrency } from "../lib/pricing";
 import { isSeatSelectable, type NormalizedVenue, type NormalizedSeat } from "../lib/venue";
 
 type SeatingMapProps = {
   activeSeatId: string | null;
   canSelectMore: boolean;
+  isHeatMapEnabled: boolean;
+  onHeatMapChange: () => void;
   onSeatFocus: (seat: NormalizedSeat) => void;
   onSeatToggle: (seat: NormalizedSeat) => void;
   selectedSeatIds: Set<string>;
@@ -12,30 +14,131 @@ type SeatingMapProps = {
 };
 
 type SeatMarkerProps = {
-  canSelectMore: boolean;
+  isBlocked: boolean;
   isActive: boolean;
+  isHeatMapEnabled: boolean;
   isSelected: boolean;
-  onSeatFocus: (seat: NormalizedSeat) => void;
-  onSeatToggle: (seat: NormalizedSeat) => void;
   seat: NormalizedSeat;
 };
 
 export function SeatingMap({
   activeSeatId,
   canSelectMore,
+  isHeatMapEnabled,
+  onHeatMapChange,
   onSeatFocus,
   onSeatToggle,
   selectedSeatIds,
   venue
 }: SeatingMapProps) {
+  const activeSeatIndex = useMemo(() => {
+    if (!activeSeatId) {
+      return 0;
+    }
+
+    const seatIndex = venue.seats.findIndex((seat) => seat.id === activeSeatId);
+    return seatIndex >= 0 ? seatIndex : 0;
+  }, [activeSeatId, venue.seats]);
+
+  const focusSeat = useCallback(
+    (seat: NormalizedSeat) => {
+      onSeatFocus(seat);
+      requestAnimationFrame(() => {
+        document.querySelector<SVGCircleElement>(`[data-seat-id="${seat.id}"]`)?.focus();
+      });
+    },
+    [onSeatFocus]
+  );
+
+  const findEventSeat = useCallback(
+    (eventTarget: EventTarget | null): NormalizedSeat | null => {
+      if (!(eventTarget instanceof SVGElement)) {
+        return null;
+      }
+
+      const seatId = eventTarget.dataset.seatId;
+      return seatId ? venue.seatsById.get(seatId) ?? null : null;
+    },
+    [venue.seatsById]
+  );
+
+  const handleSeatClick = useCallback(
+    (event: MouseEvent<SVGSVGElement>) => {
+      const seat = findEventSeat(event.target);
+
+      if (!seat) {
+        return;
+      }
+
+      onSeatFocus(seat);
+      onSeatToggle(seat);
+    },
+    [findEventSeat, onSeatFocus, onSeatToggle]
+  );
+
+  const handleSeatFocus = useCallback(
+    (event: FocusEvent<SVGSVGElement>) => {
+      const seat = findEventSeat(event.target);
+
+      if (seat) {
+        onSeatFocus(seat);
+      }
+    },
+    [findEventSeat, onSeatFocus]
+  );
+
+  const handleSeatKeyDown = useCallback(
+    (event: KeyboardEvent<SVGSVGElement>) => {
+      const seat = findEventSeat(event.target);
+
+      if (!seat) {
+        return;
+      }
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onSeatToggle(seat);
+        return;
+      }
+
+      const nextSeatIndex = getNextSeatIndex(event.key, activeSeatIndex, venue.seats.length);
+
+      if (nextSeatIndex === activeSeatIndex) {
+        return;
+      }
+
+      const nextSeat = venue.seats[nextSeatIndex];
+
+      if (!nextSeat) {
+        return;
+      }
+
+      event.preventDefault();
+      focusSeat(nextSeat);
+    },
+    [activeSeatIndex, findEventSeat, focusSeat, onSeatToggle, venue.seats]
+  );
+
   return (
     <section className="map-panel" aria-label={`${venue.fixture.name} seating map`}>
+      <div className="map-toolbar">
+        <p aria-live="polite">
+          {venue.seats.length.toLocaleString()} seats loaded. Use arrow keys to move focus across seats.
+        </p>
+        <label className="heat-map-toggle">
+          <input type="checkbox" checked={isHeatMapEnabled} onChange={onHeatMapChange} />
+          Price heat map
+        </label>
+      </div>
       <div className="map-scroller">
         <svg
           className="seat-map"
           role="img"
           viewBox={`0 0 ${venue.fixture.map.width} ${venue.fixture.map.height}`}
           aria-labelledby="seat-map-title seat-map-description"
+          onClick={handleSeatClick}
+          onFocus={handleSeatFocus}
+          onKeyDown={handleSeatKeyDown}
         >
           <title id="seat-map-title">{venue.fixture.name}</title>
           <desc id="seat-map-description">Interactive map of available, held, reserved, and sold event seats.</desc>
@@ -51,11 +154,10 @@ export function SeatingMap({
           {venue.seats.map((seat) => (
             <SeatMarker
               key={seat.id}
-              canSelectMore={canSelectMore}
+              isBlocked={isSeatSelectable(seat.status) && !selectedSeatIds.has(seat.id) && !canSelectMore}
               isActive={activeSeatId === seat.id}
+              isHeatMapEnabled={isHeatMapEnabled}
               isSelected={selectedSeatIds.has(seat.id)}
-              onSeatFocus={onSeatFocus}
-              onSeatToggle={onSeatToggle}
               seat={seat}
             />
           ))}
@@ -73,50 +175,52 @@ export function SeatingMap({
 }
 
 const SeatMarker = memo(function SeatMarker({
-  canSelectMore,
+  isBlocked,
   isActive,
+  isHeatMapEnabled,
   isSelected,
-  onSeatFocus,
-  onSeatToggle,
   seat
 }: SeatMarkerProps) {
   const isSelectable = isSeatSelectable(seat.status);
   const isDisabled = !isSelectable;
-  const isSelectionBlocked = isSelectable && !isSelected && !canSelectMore;
-
-  const handleToggle = useCallback(() => {
-    onSeatFocus(seat);
-    onSeatToggle(seat);
-  }, [onSeatFocus, onSeatToggle, seat]);
-
-  const handleFocus = useCallback(() => {
-    onSeatFocus(seat);
-  }, [onSeatFocus, seat]);
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<SVGCircleElement>) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        handleToggle();
-      }
-    },
-    [handleToggle]
-  );
+  const tabIndex = isActive ? 0 : -1;
 
   return (
     <circle
-      tabIndex={0}
+      tabIndex={tabIndex}
       role="button"
-      aria-label={`${seat.sectionName}, row ${seat.row}, seat ${seat.number}, ${formatCurrency(seat.price)}, ${seat.status}`}
+      data-seat-id={seat.id}
+      aria-label={`${seat.sectionName}, row ${seat.row}, seat ${seat.number}, ${formatCurrency(seat.price)}, ${seat.status}${isBlocked ? ", selection limit reached" : ""}`}
       aria-pressed={isSelected}
-      aria-disabled={isDisabled || isSelectionBlocked}
-      className={`seat ${seat.status}${isSelected ? " selected" : ""}${isActive ? " active" : ""}`}
+      aria-disabled={isDisabled || isBlocked}
+      className={`seat ${seat.status}${isSelected ? " selected" : ""}${isActive ? " active" : ""}${isHeatMapEnabled ? ` tier-${seat.priceTier}` : ""}`}
       cx={seat.x}
       cy={seat.y}
-      r="15"
-      onClick={handleToggle}
-      onFocus={handleFocus}
-      onKeyDown={handleKeyDown}
+      r={isActive ? 17 : 13}
     />
   );
 });
+
+function getNextSeatIndex(key: string, currentIndex: number, seatCount: number): number {
+  if (seatCount === 0) {
+    return currentIndex;
+  }
+
+  if (key === "ArrowRight" || key === "ArrowDown") {
+    return Math.min(currentIndex + 1, seatCount - 1);
+  }
+
+  if (key === "ArrowLeft" || key === "ArrowUp") {
+    return Math.max(currentIndex - 1, 0);
+  }
+
+  if (key === "Home") {
+    return 0;
+  }
+
+  if (key === "End") {
+    return seatCount - 1;
+  }
+
+  return currentIndex;
+}

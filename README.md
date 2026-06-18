@@ -51,6 +51,37 @@ vip: 125
 
 The map uses SVG because the assignment is coordinate-driven and SVG gives accessible, keyboard-focusable seat elements without a canvas accessibility layer.
 
+### Frontend Performance QA
+
+The default app uses the small assignment fixture:
+
+```sh
+pnpm dev
+```
+
+Generate a local 15,000-seat venue fixture:
+
+```sh
+pnpm fixture:large
+```
+
+Then open:
+
+```text
+http://localhost:5173/?venue=large
+```
+
+Manual QA for the large fixture:
+
+- Confirm the page reports `15,000 seats loaded`.
+- Select available seats and confirm the summary stays responsive.
+- Use Tab once to enter the seat map, then Arrow keys to move between seats.
+- Use Enter or Space to select available seats.
+- Confirm held, reserved, and sold seats do not toggle selection.
+- Resize to a mobile viewport and confirm the map scrolls horizontally while details and summary remain readable.
+
+SVG is kept for this take-home because it preserves direct semantic seat elements, focus behavior, and ARIA attributes. Canvas would become preferable for larger production arenas or heavy zoom/pan interactions, but it would require a separate accessibility layer and hit-testing model.
+
 ## Backend API
 
 Start the API:

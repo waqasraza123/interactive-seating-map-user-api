@@ -9,7 +9,7 @@
 - Repository is a pnpm TypeScript monorepo.
 - Root package is private and pins `pnpm@10.13.1` through `packageManager`.
 - Workspace packages live under `apps/*` and `packages/*`.
-- `apps/web` is a Vite, React, and TypeScript frontend with an SVG seating map, localStorage-backed seat selection, and responsive panels.
+- `apps/web` is a Vite, React, and TypeScript frontend with an SVG seating map, roving keyboard focus, localStorage-backed seat selection, responsive panels, and a large-fixture QA path.
 - `apps/api` is an Express and TypeScript backend with `/health`, `/users/:id`, `POST /users`, `DELETE /cache`, and `GET /cache-status`.
 - API modules are organized under routes, services, middleware, cache, queue, data, errors, and validation folders.
 - `packages/shared` contains shared TypeScript domain and response types for venue fixtures, users, cache status, and API responses.
@@ -64,6 +64,8 @@
 - `main` tracks `origin/main`.
 - In-memory cache and queue are acceptable for the take-home; production multi-instance deployments would use shared infrastructure such as Redis and an external queue.
 - Price tiers are mapped in `apps/web/src/lib/pricing.ts` because the assignment provides tiers but not exact prices.
+- Large venue performance is validated locally by generating `apps/web/public/venue-large.json` with `pnpm fixture:large` and opening `/?venue=large`.
+- SVG is used for accessible seat elements at take-home scale; Canvas would be reconsidered for larger production maps with zoom/pan and a dedicated accessibility layer.
 
 ## Deferred / Not Yet Implemented
 
@@ -77,6 +79,7 @@
 - Avoid creating shared packages before there is a real reuse boundary.
 - Avoid adding data storage, auth, or background job libraries before the assignment requirements require them.
 - In-memory rate limiting and cache state are process-local and reset on restart.
+- Rendering 15,000 SVG seats is acceptable for validation but still heavier than Canvas for very large production seating maps.
 
 ## Standard Verification
 
