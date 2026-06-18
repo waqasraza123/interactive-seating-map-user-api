@@ -97,6 +97,7 @@ select {
   transform: scale(1.12);
 }
 
+/* Selected seats must keep priority over the available hover state. */
 .seat.available.selected:not([aria-disabled="true"]):hover {
   fill: #059669;
   transform: scale(1.12);

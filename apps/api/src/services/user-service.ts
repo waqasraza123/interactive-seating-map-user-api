@@ -29,6 +29,7 @@ export class UserService {
         return cachedUser;
       }
 
+      // Recheck the cache inside single-flight so concurrent requests share one repository read.
       return await this.dependencies.singleFlight.run(id, async () => {
         const userCachedDuringWait = this.dependencies.cache.get(id);
 

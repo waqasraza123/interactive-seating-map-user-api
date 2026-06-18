@@ -18,6 +18,7 @@ export function useSeatSelection(seatsById: Map<string, NormalizedSeat>): SeatSe
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>(() => readStoredSeatIds());
 
   useEffect(() => {
+    // Treat persisted IDs as hints; the current venue owns availability and identity.
     const restoredSeatIds = readStoredSeatIds().filter((seatId) => {
       const seat = seatsById.get(seatId);
       return seat ? isSeatSelectable(seat.status) : false;

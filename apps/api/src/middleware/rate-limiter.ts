@@ -22,6 +22,7 @@ export function createRateLimiter(config: RateLimitConfig = defaultConfig): Requ
     const now = Date.now();
     const ipAddress = request.ip || request.socket.remoteAddress || "unknown";
     const currentRequests = requestsByIp.get(ipAddress) ?? [];
+    // Keep both windows on one timestamp list so burst and minute limits cannot drift.
     const activeRequests = currentRequests.filter((timestamp) => now - timestamp < config.minuteWindowMs);
     const burstRequests = activeRequests.filter((timestamp) => now - timestamp < config.burstWindowMs);
 

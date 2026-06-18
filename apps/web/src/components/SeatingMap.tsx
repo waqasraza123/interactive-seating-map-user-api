@@ -43,6 +43,7 @@ export function SeatingMap({
   const focusSeat = useCallback(
     (seat: NormalizedSeat) => {
       onSeatFocus(seat);
+      // Wait for React to commit the new roving tabIndex before moving DOM focus.
       requestAnimationFrame(() => {
         document.querySelector<SVGCircleElement>(`[data-seat-id="${seat.id}"]`)?.focus();
       });

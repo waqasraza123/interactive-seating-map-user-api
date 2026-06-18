@@ -43,6 +43,7 @@ export function useVenue(source: VenueSource): VenueState {
 
         const contentType = response.headers.get("content-type") ?? "";
         if (!contentType.includes("application/json")) {
+          // Vite falls back to HTML for missing public assets, so guard before parsing JSON.
           if (source === "large") {
             throw new Error(missingLargeVenueMessage);
           }
