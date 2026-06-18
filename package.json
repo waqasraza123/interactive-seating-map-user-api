@@ -10,7 +10,7 @@
     "lint": "pnpm -r lint",
     "setup:githooks": "git config core.hooksPath .githooks",
     "safe-push": "sh scripts/safe-push.sh",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @interactive-seating-map/shared build && pnpm -r typecheck",
     "verify:push": "sh scripts/verify-push.sh"
   },
   "devDependencies": {

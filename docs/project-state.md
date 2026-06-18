@@ -2,7 +2,7 @@
 
 ## Product
 
-`interactive-seating-map-user-api` is a full-stack take-home assignment for an interactive event seating map. The product includes a React frontend and an Express user data API that will later add caching, rate limiting, and async processing.
+`interactive-seating-map-user-api` is a full-stack take-home assignment for an interactive event seating map. The product includes a React frontend and an Express user data API with in-memory caching, rate limiting, and async mock data fetches.
 
 ## Current Architecture
 
@@ -10,8 +10,9 @@
 - Root package is private and pins `pnpm@10.13.1` through `packageManager`.
 - Workspace packages live under `apps/*` and `packages/*`.
 - `apps/web` is a Vite, React, and TypeScript frontend shell.
-- `apps/api` is an Express and TypeScript backend with a minimal `/health` route.
-- `packages/shared` contains shared TypeScript domain types for venue fixtures.
+- `apps/api` is an Express and TypeScript backend with `/health`, `/users/:id`, `POST /users`, `DELETE /cache`, and `GET /cache-status`.
+- API modules are organized under routes, services, middleware, cache, queue, data, errors, and validation folders.
+- `packages/shared` contains shared TypeScript domain and response types for venue fixtures, users, cache status, and API responses.
 - `apps/web/public/venue.json` is the starter public venue fixture.
 - The repository has a versioned safe-push workflow through `.githooks/pre-push`, `scripts/verify-push.sh`, and `scripts/safe-push.sh`.
 - Strict TypeScript is enabled through `tsconfig.base.json` and package-level configs.
@@ -33,10 +34,9 @@
 
 ## Current Roadmap
 
-- Add backend middleware for request parsing, error handling, rate limiting, and caching.
-- Add async processing boundaries for future user-data workflows.
+- Add tests around backend cache behavior, rate limiting, validation, and single-flight request deduplication.
 - Add frontend venue fixture loading and seating map rendering.
-- Add tests around shared types, API routes, and frontend behavior.
+- Add frontend API integration once backend contracts are stable.
 - Add CI after local verification commands are stable.
 
 ## Completed Major Slices
@@ -50,6 +50,7 @@
 - Added versioned safe-push workflow and contributor documentation.
 - Added TypeScript monorepo scaffold with `apps/web`, `apps/api`, and `packages/shared`.
 - Pushed `main` to the GitHub `origin` remote.
+- Implemented backend user API with in-memory LRU cache, metrics, rate limiting, queue-backed mock fetches, and centralized errors.
 
 ## Important Decisions
 
@@ -60,11 +61,12 @@
 - Safe-push verification runs the root `pnpm build` script before pushing.
 - Use Vite for the React frontend and Express for the backend API.
 - `main` tracks `origin/main`.
+- In-memory cache and queue are acceptable for the take-home; production multi-instance deployments would use shared infrastructure such as Redis and an external queue.
 
 ## Deferred / Not Yet Implemented
 
 - No data model, database, authentication, or deployment target has been implemented.
-- Caching, rate limiting, async processing, and user data routes are not implemented yet.
+- Frontend seating map rendering and API integration are not implemented yet.
 - No test runner, formatter, or CI workflow has been added.
 
 ## Risks / Watchouts
@@ -72,6 +74,7 @@
 - Corepack may need to download `pnpm@10.13.1` before pnpm commands work on a fresh machine.
 - Avoid creating shared packages before there is a real reuse boundary.
 - Avoid adding data storage, auth, or background job libraries before the assignment requirements require them.
+- In-memory rate limiting and cache state are process-local and reset on restart.
 
 ## Standard Verification
 

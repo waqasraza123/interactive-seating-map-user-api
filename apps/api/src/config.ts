@@ -1,7 +1,13 @@
 export type ApiConfig = {
+  cacheCleanupIntervalMs: number;
+  cacheMaxEntries: number;
+  cacheTtlMs: number;
   port: number;
 };
 
+const cacheCleanupIntervalMs = 10_000;
+const cacheMaxEntries = 100;
+const cacheTtlMs = 60_000;
 const defaultPort = 3000;
 
 export function readApiConfig(environment: NodeJS.ProcessEnv): ApiConfig {
@@ -12,5 +18,10 @@ export function readApiConfig(environment: NodeJS.ProcessEnv): ApiConfig {
     throw new Error("PORT must be an integer between 1 and 65535");
   }
 
-  return { port };
+  return {
+    cacheCleanupIntervalMs,
+    cacheMaxEntries,
+    cacheTtlMs,
+    port
+  };
 }
