@@ -34,15 +34,15 @@ const fixture: VenueFixture = {
           x: 140,
           y: 120
         },
-        {
-          id: "a-3",
-          number: 3,
-          priceTier: "standard",
+        ...Array.from({ length: 8 }, (_, index) => ({
+          id: `a-${index + 3}`,
+          number: index + 3,
+          priceTier: "standard" as const,
           row: "A",
-          status: "available",
-          x: 180,
+          status: "available" as const,
+          x: 180 + index * 40,
           y: 120
-        }
+        }))
       ]
     }
   ]
@@ -64,7 +64,7 @@ function mockVenueFetch(): void {
 
 async function renderApp() {
   render(<App />);
-  await screen.findByText("3 seats loaded. Use arrow keys to move focus across seats.");
+  await screen.findByText("10 seats loaded. Use arrow keys to move focus across seats.");
 }
 
 function getSelectedSeatsPanel(): HTMLElement {
@@ -112,7 +112,7 @@ describe("App", () => {
     await user.click(seat);
 
     expect(seat).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("1 of 8 selected")).toBeInTheDocument();
+    expect(screen.getByText("1 / 8 selected")).toBeInTheDocument();
   });
 
   it("does not select unavailable seats", async () => {
@@ -124,7 +124,7 @@ describe("App", () => {
 
     expect(soldSeat).toHaveAttribute("aria-pressed", "false");
     expect(soldSeat).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByText("0 of 8 selected")).toBeInTheDocument();
+    expect(screen.getByText("0 / 8 selected")).toBeInTheDocument();
   });
 
   it("updates the selected summary and subtotal", async () => {
@@ -135,9 +135,35 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: /Section A, row A, seat 3, \$55, available/ }));
 
     const panel = getSelectedSeatsPanel();
-    expect(within(panel).getByText("2 of 8 selected")).toBeInTheDocument();
+    expect(within(panel).getByText("2 / 8 selected")).toBeInTheDocument();
     expect(within(panel).getByText("Section A, row A, seat 1")).toBeInTheDocument();
     expect(within(panel).getByText("Section A, row A, seat 3")).toBeInTheDocument();
     expect(within(panel).getByText("$180")).toBeInTheDocument();
+
+    const firstRemoveButton = within(panel).getAllByRole("button", { name: /Remove Section A, row A, seat 1/ })[0];
+
+    if (!firstRemoveButton) {
+      throw new Error("Remove button was not found.");
+    }
+
+    await user.click(firstRemoveButton);
+
+    expect(within(panel).getByText("1 / 8 selected")).toBeInTheDocument();
+    expect(within(panel).queryByText("Section A, row A, seat 1")).not.toBeInTheDocument();
+    expect(within(panel).getAllByText("$55")).toHaveLength(2);
+  });
+
+  it("shows a limit warning when selecting more than eight seats", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+
+    for (const seatNumber of [1, 3, 4, 5, 6, 7, 8, 9]) {
+      await user.click(screen.getByRole("button", { name: new RegExp(`Section A, row A, seat ${seatNumber}, .* available`) }));
+    }
+
+    await user.click(screen.getByRole("button", { name: /Section A, row A, seat 10, \$55, available/ }));
+
+    expect(screen.getByRole("status")).toHaveTextContent("Selection limit reached. Remove a seat before choosing another.");
+    expect(screen.getByText("8 / 8 selected")).toBeInTheDocument();
   });
 });

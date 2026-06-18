@@ -120,15 +120,23 @@ export function SeatingMap({
   );
 
   return (
-    <section className="map-panel" aria-label={`${venue.fixture.name} seating map`}>
-      <div className="map-toolbar">
-        <p aria-live="polite">{venue.seats.length.toLocaleString()} seats loaded. Use arrow keys to move focus across seats.</p>
-        <label className="heat-map-toggle">
-          <input type="checkbox" checked={isHeatMapEnabled} onChange={onHeatMapChange} />
-          Price heat map
+    <section
+      className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
+      aria-label={`${venue.fixture.name} seating map`}
+    >
+      <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-600" aria-live="polite">
+            {venue.seats.length.toLocaleString()} seats loaded. Use arrow keys to move focus across seats.
+          </p>
+          <p className="mt-1 text-xs text-slate-500">Blue seats are available; green seats are selected.</p>
+        </div>
+        <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
+          <input className="size-4 accent-slate-950" type="checkbox" checked={isHeatMapEnabled} onChange={onHeatMapChange} />
+          <span>Price heat map</span>
         </label>
       </div>
-      <div className="map-scroller">
+      <div className="overflow-auto p-3 [-webkit-overflow-scrolling:touch] sm:p-4">
         <svg
           className="seat-map"
           role="img"
@@ -161,24 +169,27 @@ export function SeatingMap({
           ))}
         </svg>
       </div>
-      <div className="legend" aria-label="Seat status legend">
-        <span>
+      <div
+        className="flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-200 px-4 py-3 text-sm text-slate-600"
+        aria-label="Seat status legend"
+      >
+        <span className="inline-flex items-center gap-2">
           <span className="legend-dot available" />
           Available
         </span>
-        <span>
+        <span className="inline-flex items-center gap-2">
           <span className="legend-dot selected" />
           Selected
         </span>
-        <span>
+        <span className="inline-flex items-center gap-2">
           <span className="legend-dot held" />
           Held
         </span>
-        <span>
+        <span className="inline-flex items-center gap-2">
           <span className="legend-dot reserved" />
           Reserved
         </span>
-        <span>
+        <span className="inline-flex items-center gap-2">
           <span className="legend-dot sold" />
           Sold
         </span>
@@ -191,6 +202,7 @@ const SeatMarker = memo(function SeatMarker({ isBlocked, isActive, isHeatMapEnab
   const isSelectable = isSeatSelectable(seat.status);
   const isDisabled = !isSelectable;
   const tabIndex = isActive ? 0 : -1;
+  const limitClassName = isBlocked ? " limit-reached" : "";
 
   return (
     <circle
@@ -200,7 +212,7 @@ const SeatMarker = memo(function SeatMarker({ isBlocked, isActive, isHeatMapEnab
       aria-label={`${seat.sectionName}, row ${seat.row}, seat ${seat.number}, ${formatCurrency(seat.price)}, ${seat.status}${isBlocked ? ", selection limit reached" : ""}`}
       aria-pressed={isSelected}
       aria-disabled={isDisabled || isBlocked}
-      className={`seat ${seat.status}${isSelected ? " selected" : ""}${isActive ? " active" : ""}${isHeatMapEnabled ? ` tier-${seat.priceTier}` : ""}`}
+      className={`seat ${seat.status}${isSelected ? " selected" : ""}${isActive ? " active" : ""}${isHeatMapEnabled ? ` tier-${seat.priceTier}` : ""}${limitClassName}`}
       cx={seat.x}
       cy={seat.y}
       r={isActive ? 17 : 13}

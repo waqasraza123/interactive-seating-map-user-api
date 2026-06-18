@@ -9,7 +9,7 @@
 - Repository is a pnpm TypeScript monorepo.
 - Root package is private and pins `pnpm@10.13.1` through `packageManager`.
 - Workspace packages live under `apps/*` and `packages/*`.
-- `apps/web` is a Vite, React, and TypeScript frontend with an SVG seating map, roving keyboard focus, localStorage-backed seat selection, responsive panels, and a large-fixture QA path.
+- `apps/web` is a Vite, React, Tailwind CSS, and TypeScript frontend with an SVG seating map, roving keyboard focus, localStorage-backed seat selection, responsive panels, lightweight selection animations, and a large-fixture QA path.
 - `apps/api` is an Express and TypeScript backend with `/health`, `/users/:id`, `POST /users`, `DELETE /cache`, and `GET /cache-status`.
 - API modules are organized under routes, services, middleware, cache, queue, data, errors, and validation folders.
 - `packages/shared` contains shared TypeScript domain and response types for venue fixtures, users, cache status, and API responses.
@@ -57,6 +57,7 @@
 - Prepared final submission documentation with architecture, commands, API examples, QA checklist, trade-offs, and deferred items.
 - Added focused automated tests for backend API behavior, cache/rate limiting, service single-flight deduplication, and core frontend seat selection flows.
 - Added Prettier formatting, expanded safe-push verification, and GitHub Actions CI for public assignment hygiene.
+- Added Tailwind CSS frontend polish with improved seat selection visuals, removable selected-seat cards, progress, responsive panels, and accessible max-selection feedback.
 
 ## Important Decisions
 
@@ -66,6 +67,7 @@
 - Version Git hooks under `.githooks` and apply them locally with `pnpm setup:githooks`.
 - Safe-push verification runs `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` before pushing.
 - Use Vite for the React frontend and Express for the backend API.
+- Use Tailwind CSS utilities for primary frontend layout and panel styling, with small custom CSS retained for SVG seat states and lightweight animations.
 - `main` tracks `origin/main`.
 - In-memory cache and queue are acceptable for the take-home; production multi-instance deployments would use shared infrastructure such as Redis and an external queue.
 - `createApp` accepts an optional rate-limit override so API tests can exercise 429 behavior deterministically while runtime defaults remain unchanged.

@@ -7,6 +7,7 @@ const maxSelectedSeats = 8;
 export type SeatSelectionState = {
   canSelectMore: boolean;
   maxSelectedSeats: number;
+  removeSeat: (seatId: string) => void;
   selectedSeatIds: string[];
   selectedSeats: NormalizedSeat[];
   subtotal: number;
@@ -40,6 +41,10 @@ export function useSeatSelection(seatsById: Map<string, NormalizedSeat>): SeatSe
 
   const subtotal = useMemo(() => selectedSeats.reduce((total, seat) => total + seat.price, 0), [selectedSeats]);
 
+  const removeSeat = useCallback((seatId: string) => {
+    setSelectedSeatIds((currentSeatIds) => currentSeatIds.filter((currentSeatId) => currentSeatId !== seatId));
+  }, []);
+
   const toggleSeat = useCallback((seat: NormalizedSeat) => {
     if (!isSeatSelectable(seat.status)) {
       return;
@@ -61,6 +66,7 @@ export function useSeatSelection(seatsById: Map<string, NormalizedSeat>): SeatSe
   return {
     canSelectMore: selectedSeatIds.length < maxSelectedSeats,
     maxSelectedSeats,
+    removeSeat,
     selectedSeatIds,
     selectedSeats,
     subtotal,

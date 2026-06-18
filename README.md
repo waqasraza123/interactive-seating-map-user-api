@@ -8,7 +8,7 @@ The app lets a user browse an event venue, inspect seat details, select up to 8 
 
 This is a pnpm TypeScript monorepo.
 
-- `apps/web`: Vite, React, TypeScript, SVG seating map UI.
+- `apps/web`: Vite, React, TypeScript, Tailwind CSS, SVG seating map UI.
 - `apps/api`: Express, TypeScript, user data API.
 - `packages/shared`: Shared domain and API response types.
 - `scripts`: repository workflow and local fixture generation scripts.
@@ -73,6 +73,9 @@ Implemented behavior:
 - Focus or click updates the details panel.
 - Seats expose `aria-label`, `aria-pressed`, and `aria-disabled`.
 - Held, reserved, and sold seats are visible but not selectable.
+- Tailwind CSS handles the main layout, panels, responsive spacing, and selected-seat summary styling.
+- Lightweight CSS transitions and keyframes provide selected-seat feedback without a runtime animation library.
+- The summary shows removable selected-seat cards, a subtotal panel, a progress indicator, and an accessible warning when the 8-seat limit is reached.
 - Selected seats persist in `localStorage` and are validated against current venue data on reload.
 - Selected seat summary updates live with subtotal.
 - Responsive layout keeps the map scrollable and details readable on mobile.
