@@ -49,6 +49,7 @@
 - Added durable and local Codex context system.
 - Added versioned safe-push workflow and contributor documentation.
 - Added TypeScript monorepo scaffold with `apps/web`, `apps/api`, and `packages/shared`.
+- Pushed `main` to the GitHub `origin` remote.
 
 ## Important Decisions
 
@@ -58,18 +59,16 @@
 - Version Git hooks under `.githooks` and apply them locally with `pnpm setup:githooks`.
 - Safe-push verification runs the root `pnpm build` script before pushing.
 - Use Vite for the React frontend and Express for the backend API.
+- `main` tracks `origin/main`.
 
 ## Deferred / Not Yet Implemented
 
-- GitHub remote and public repository are not configured in this checkout.
 - No data model, database, authentication, or deployment target has been implemented.
 - Caching, rate limiting, async processing, and user data routes are not implemented yet.
 - No test runner, formatter, or CI workflow has been added.
 
 ## Risks / Watchouts
 
-- GitHub CLI exists locally, but authentication is currently invalid for account `waqasraza123`.
-- There is no `origin` remote, so pushes cannot succeed until the public GitHub repo is created and remote is set.
 - Corepack may need to download `pnpm@10.13.1` before pnpm commands work on a fresh machine.
 - Avoid creating shared packages before there is a real reuse boundary.
 - Avoid adding data storage, auth, or background job libraries before the assignment requirements require them.
