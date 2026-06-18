@@ -1,8 +1,11 @@
+import type { RateLimitConfig } from "./middleware/rate-limiter.js";
+
 export type ApiConfig = {
   cacheCleanupIntervalMs: number;
   cacheMaxEntries: number;
   cacheTtlMs: number;
   port: number;
+  rateLimit?: RateLimitConfig;
 };
 
 const cacheCleanupIntervalMs = 10_000;

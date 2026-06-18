@@ -1,7 +1,7 @@
 import type { ApiErrorResponse } from "@interactive-seating-map/shared";
 import type { RequestHandler } from "express";
 
-type RateLimitConfig = {
+export type RateLimitConfig = {
   burstLimit: number;
   burstWindowMs: number;
   minuteLimit: number;

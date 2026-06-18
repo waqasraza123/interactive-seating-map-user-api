@@ -20,6 +20,7 @@ The repo keeps frontend, backend, and shared types separate so each workspace ca
 ```sh
 pnpm install
 pnpm dev
+pnpm test
 pnpm build
 pnpm typecheck
 pnpm lint
@@ -149,11 +150,24 @@ Clear cache:
 curl -X DELETE http://localhost:3000/cache
 ```
 
+## Automated Tests
+
+Run all focused backend and frontend tests:
+
+```sh
+pnpm test
+```
+
+The backend suite uses Vitest and Supertest to cover health, user lookup, missing-user JSON errors, cache hits and misses, cache clearing, user creation, rate limiting, and service-level single-flight deduplication.
+
+The frontend suite uses Vitest, Testing Library React, and user-event to cover app rendering, venue seats, available seat selection, unavailable seat behavior, and selected-seat summary/subtotal updates.
+
 ## Manual QA Checklist
 
 Run static checks:
 
 ```sh
+pnpm test
 pnpm build
 pnpm typecheck
 pnpm lint
@@ -184,7 +198,6 @@ Backend:
 
 ## Incomplete / Deferred
 
-- No automated test runner yet.
 - No CI workflow yet.
 - No formatter configuration yet.
 - No database, authentication, deployment target, or persistent background queue.

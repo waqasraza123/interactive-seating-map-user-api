@@ -14,6 +14,7 @@
 - API modules are organized under routes, services, middleware, cache, queue, data, errors, and validation folders.
 - `packages/shared` contains shared TypeScript domain and response types for venue fixtures, users, cache status, and API responses.
 - `apps/web/public/venue.json` is the public venue fixture with positioned seats and price tiers.
+- Automated tests use Vitest across the workspace, Supertest for backend API routes, and Testing Library React with user-event for frontend behavior.
 - The repository has a versioned safe-push workflow through `.githooks/pre-push`, `scripts/verify-push.sh`, and `scripts/safe-push.sh`.
 - Strict TypeScript is enabled through `tsconfig.base.json` and package-level configs.
 - ESLint is configured at the root and run per workspace.
@@ -34,8 +35,7 @@
 
 ## Current Roadmap
 
-- Add tests around backend cache behavior, rate limiting, validation, and single-flight request deduplication.
-- Add frontend tests around venue loading, keyboard selection, localStorage restoration, and max-seat enforcement.
+- Add frontend tests around keyboard selection, localStorage restoration, and max-seat enforcement.
 - Add frontend API integration only if the assignment scope requires connecting user data to the map.
 - Add CI after local verification commands are stable.
 
@@ -53,6 +53,7 @@
 - Implemented backend user API with in-memory LRU cache, metrics, rate limiting, queue-backed mock fetches, and centralized errors.
 - Implemented frontend interactive SVG seating map with selection, details, subtotal, localStorage persistence, and responsive layout.
 - Prepared final submission documentation with architecture, commands, API examples, QA checklist, trade-offs, and deferred items.
+- Added focused automated tests for backend API behavior, cache/rate limiting, service single-flight deduplication, and core frontend seat selection flows.
 
 ## Important Decisions
 
@@ -64,6 +65,7 @@
 - Use Vite for the React frontend and Express for the backend API.
 - `main` tracks `origin/main`.
 - In-memory cache and queue are acceptable for the take-home; production multi-instance deployments would use shared infrastructure such as Redis and an external queue.
+- `createApp` accepts an optional rate-limit override so API tests can exercise 429 behavior deterministically while runtime defaults remain unchanged.
 - Price tiers are mapped in `apps/web/src/lib/pricing.ts` because the assignment provides tiers but not exact prices.
 - Large venue performance is validated locally by generating `apps/web/public/venue-large.json` with `pnpm fixture:large` and opening `/?venue=large`.
 - SVG is used for accessible seat elements at take-home scale; Canvas would be reconsidered for larger production maps with zoom/pan and a dedicated accessibility layer.
@@ -72,7 +74,7 @@
 
 - No data model, database, authentication, or deployment target has been implemented.
 - Frontend API integration is not implemented because this slice only requires the seating map.
-- No test runner, formatter, or CI workflow has been added.
+- No formatter or CI workflow has been added.
 
 ## Risks / Watchouts
 
@@ -89,6 +91,7 @@
 - `git remote -v`
 - `pnpm --version`
 - `pnpm -w list --depth -1`
+- `pnpm test`
 - `pnpm build`
 - `pnpm typecheck`
 - `pnpm lint`

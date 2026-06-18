@@ -29,7 +29,7 @@ export function createApp(config: ApiConfig): Express {
   startStaleCacheCleaner(userCache, config.cacheCleanupIntervalMs);
 
   app.use(express.json());
-  app.use(createRateLimiter());
+  app.use(createRateLimiter(config.rateLimit));
   app.use(createHealthRouter());
   app.use(createUserRouter(userService));
   app.use(createCacheRouter(userService));
