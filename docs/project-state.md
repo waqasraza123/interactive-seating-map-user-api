@@ -9,11 +9,11 @@
 - Repository is a pnpm TypeScript monorepo.
 - Root package is private and pins `pnpm@10.13.1` through `packageManager`.
 - Workspace packages live under `apps/*` and `packages/*`.
-- `apps/web` is a Vite, React, and TypeScript frontend shell.
+- `apps/web` is a Vite, React, and TypeScript frontend with an SVG seating map, localStorage-backed seat selection, and responsive panels.
 - `apps/api` is an Express and TypeScript backend with `/health`, `/users/:id`, `POST /users`, `DELETE /cache`, and `GET /cache-status`.
 - API modules are organized under routes, services, middleware, cache, queue, data, errors, and validation folders.
 - `packages/shared` contains shared TypeScript domain and response types for venue fixtures, users, cache status, and API responses.
-- `apps/web/public/venue.json` is the starter public venue fixture.
+- `apps/web/public/venue.json` is the public venue fixture with positioned seats and price tiers.
 - The repository has a versioned safe-push workflow through `.githooks/pre-push`, `scripts/verify-push.sh`, and `scripts/safe-push.sh`.
 - Strict TypeScript is enabled through `tsconfig.base.json` and package-level configs.
 - ESLint is configured at the root and run per workspace.
@@ -35,8 +35,8 @@
 ## Current Roadmap
 
 - Add tests around backend cache behavior, rate limiting, validation, and single-flight request deduplication.
-- Add frontend venue fixture loading and seating map rendering.
-- Add frontend API integration once backend contracts are stable.
+- Add frontend tests around venue loading, keyboard selection, localStorage restoration, and max-seat enforcement.
+- Add frontend API integration only if the assignment scope requires connecting user data to the map.
 - Add CI after local verification commands are stable.
 
 ## Completed Major Slices
@@ -51,6 +51,7 @@
 - Added TypeScript monorepo scaffold with `apps/web`, `apps/api`, and `packages/shared`.
 - Pushed `main` to the GitHub `origin` remote.
 - Implemented backend user API with in-memory LRU cache, metrics, rate limiting, queue-backed mock fetches, and centralized errors.
+- Implemented frontend interactive SVG seating map with selection, details, subtotal, localStorage persistence, and responsive layout.
 
 ## Important Decisions
 
@@ -62,11 +63,12 @@
 - Use Vite for the React frontend and Express for the backend API.
 - `main` tracks `origin/main`.
 - In-memory cache and queue are acceptable for the take-home; production multi-instance deployments would use shared infrastructure such as Redis and an external queue.
+- Price tiers are mapped in `apps/web/src/lib/pricing.ts` because the assignment provides tiers but not exact prices.
 
 ## Deferred / Not Yet Implemented
 
 - No data model, database, authentication, or deployment target has been implemented.
-- Frontend seating map rendering and API integration are not implemented yet.
+- Frontend API integration is not implemented because this slice only requires the seating map.
 - No test runner, formatter, or CI workflow has been added.
 
 ## Risks / Watchouts

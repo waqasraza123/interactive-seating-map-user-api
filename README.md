@@ -27,6 +27,30 @@ pnpm setup:githooks
 
 The web app serves the starter venue fixture from `apps/web/public/venue.json`.
 
+## Frontend Seating Map
+
+The frontend loads `apps/web/public/venue.json`, normalizes sections and seats once, and renders the seating map as SVG.
+
+Frontend behavior:
+
+- Renders every fixture seat at its `x` and `y` coordinates.
+- Supports click, tab focus, Enter, and Space for seat interaction.
+- Shows focused or clicked seat details: section, row, seat number, price, and status.
+- Allows selecting up to 8 available seats.
+- Keeps held, reserved, and sold seats visible but disabled.
+- Shows selected seats and subtotal live.
+- Persists selected seat IDs in `localStorage` and validates restored IDs against the current venue fixture.
+
+Price tiers are assignment assumptions:
+
+```ts
+standard: 55
+premium: 85
+vip: 125
+```
+
+The map uses SVG because the assignment is coordinate-driven and SVG gives accessible, keyboard-focusable seat elements without a canvas accessibility layer.
+
 ## Backend API
 
 Start the API:

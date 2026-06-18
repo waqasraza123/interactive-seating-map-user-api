@@ -1,35 +1,62 @@
 {
   "id": "demo-venue",
   "name": "Demo Event Hall",
+  "map": {
+    "width": 900,
+    "height": 560
+  },
   "sections": [
     {
       "id": "floor-a",
       "name": "Floor A",
       "seats": [
-        {
-          "id": "A-1",
-          "row": "A",
-          "number": 1,
-          "x": 120,
-          "y": 140,
-          "status": "available"
-        },
-        {
-          "id": "A-2",
-          "row": "A",
-          "number": 2,
-          "x": 168,
-          "y": 140,
-          "status": "held"
-        },
-        {
-          "id": "A-3",
-          "row": "A",
-          "number": 3,
-          "x": 216,
-          "y": 140,
-          "status": "sold"
-        }
+        { "id": "A-1", "row": "A", "number": 1, "x": 210, "y": 170, "priceTier": "vip", "status": "available" },
+        { "id": "A-2", "row": "A", "number": 2, "x": 260, "y": 170, "priceTier": "vip", "status": "available" },
+        { "id": "A-3", "row": "A", "number": 3, "x": 310, "y": 170, "priceTier": "vip", "status": "held" },
+        { "id": "A-4", "row": "A", "number": 4, "x": 360, "y": 170, "priceTier": "vip", "status": "available" },
+        { "id": "A-5", "row": "A", "number": 5, "x": 410, "y": 170, "priceTier": "vip", "status": "sold" },
+        { "id": "A-6", "row": "A", "number": 6, "x": 460, "y": 170, "priceTier": "vip", "status": "available" },
+        { "id": "A-7", "row": "A", "number": 7, "x": 510, "y": 170, "priceTier": "vip", "status": "available" },
+        { "id": "A-8", "row": "A", "number": 8, "x": 560, "y": 170, "priceTier": "vip", "status": "reserved" },
+        { "id": "A-9", "row": "A", "number": 9, "x": 610, "y": 170, "priceTier": "vip", "status": "available" },
+        { "id": "A-10", "row": "A", "number": 10, "x": 660, "y": 170, "priceTier": "vip", "status": "available" }
+      ]
+    },
+    {
+      "id": "floor-b",
+      "name": "Floor B",
+      "seats": [
+        { "id": "B-1", "row": "B", "number": 1, "x": 180, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-2", "row": "B", "number": 2, "x": 230, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-3", "row": "B", "number": 3, "x": 280, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-4", "row": "B", "number": 4, "x": 330, "y": 240, "priceTier": "premium", "status": "held" },
+        { "id": "B-5", "row": "B", "number": 5, "x": 380, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-6", "row": "B", "number": 6, "x": 430, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-7", "row": "B", "number": 7, "x": 480, "y": 240, "priceTier": "premium", "status": "sold" },
+        { "id": "B-8", "row": "B", "number": 8, "x": 530, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-9", "row": "B", "number": 9, "x": 580, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-10", "row": "B", "number": 10, "x": 630, "y": 240, "priceTier": "premium", "status": "reserved" },
+        { "id": "B-11", "row": "B", "number": 11, "x": 680, "y": 240, "priceTier": "premium", "status": "available" },
+        { "id": "B-12", "row": "B", "number": 12, "x": 730, "y": 240, "priceTier": "premium", "status": "available" }
+      ]
+    },
+    {
+      "id": "balcony-c",
+      "name": "Balcony C",
+      "seats": [
+        { "id": "C-1", "row": "C", "number": 1, "x": 150, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-2", "row": "C", "number": 2, "x": 200, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-3", "row": "C", "number": 3, "x": 250, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-4", "row": "C", "number": 4, "x": 300, "y": 330, "priceTier": "standard", "status": "sold" },
+        { "id": "C-5", "row": "C", "number": 5, "x": 350, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-6", "row": "C", "number": 6, "x": 400, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-7", "row": "C", "number": 7, "x": 450, "y": 330, "priceTier": "standard", "status": "reserved" },
+        { "id": "C-8", "row": "C", "number": 8, "x": 500, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-9", "row": "C", "number": 9, "x": 550, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-10", "row": "C", "number": 10, "x": 600, "y": 330, "priceTier": "standard", "status": "held" },
+        { "id": "C-11", "row": "C", "number": 11, "x": 650, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-12", "row": "C", "number": 12, "x": 700, "y": 330, "priceTier": "standard", "status": "available" },
+        { "id": "C-13", "row": "C", "number": 13, "x": 750, "y": 330, "priceTier": "standard", "status": "available" }
       ]
     }
   ]

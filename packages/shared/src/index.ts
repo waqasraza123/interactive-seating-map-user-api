@@ -1,12 +1,15 @@
-export type SeatStatus = "available" | "held" | "sold";
+export type SeatStatus = "available" | "held" | "reserved" | "sold";
+
+export type PriceTier = "standard" | "premium" | "vip";
 
 export type VenueSeat = {
   id: string;
-  row: string;
   number: number;
+  priceTier: PriceTier;
+  row: string;
+  status: SeatStatus;
   x: number;
   y: number;
-  status: SeatStatus;
 };
 
 export type VenueSection = {
@@ -17,6 +20,10 @@ export type VenueSection = {
 
 export type VenueFixture = {
   id: string;
+  map: {
+    height: number;
+    width: number;
+  };
   name: string;
   sections: VenueSection[];
 };
